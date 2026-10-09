@@ -1,0 +1,11 @@
+# Binaries
+/ledger
+*.exe
+/bin/
+
+# Local env
+.env
+
+# Editor
+.vscode/
+.idea/
