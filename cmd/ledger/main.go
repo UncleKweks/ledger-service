@@ -13,7 +13,7 @@ import (
 func main() {
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
-		dbURL = "postgres://ledger:ledger_dev@localhost:5433/ledger?sslmode=disable"
+		dbURL = "postgres://ledger:ledger_dev@127.0.0.1:55432/ledger?sslmode=disable"
 	}
 
 	pool, err := pgxpool.New(context.Background(), dbURL)
