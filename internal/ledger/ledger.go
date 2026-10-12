@@ -11,13 +11,23 @@ import (
 // Account is a named bucket of value in a single currency.
 // Its balance is not stored; it is the sum of its entries.
 type Account struct {
-	ID        uuid.UUID
-	Name      string
-	Currency  string // ISO 4217 code, e.g. "NGN", "USD"
-	CreatedAt time.Time
+	ID       uuid.UUID
+	Name     string
+	Currency string // ISO 4217 code, e.g. "NGN", "USD"
+	// AllowNegativeBalance marks system accounts (settlement, funding sources)
+	// that may be overdrawn. Ordinary accounts may not.
+	AllowNegativeBalance bool
+	CreatedAt            time.Time
 }
 
-// Transaction groups the entries of one posting. Its entries must sum to zero.
+// Balance is an account's balance in minor units, computed from its entries.
+type Balance struct {
+	AccountID uuid.UUID
+	Currency  string
+	Amount    int64
+}
+
+// Transaction groups the entries of one posting. Its entries sum to zero.
 type Transaction struct {
 	ID             uuid.UUID
 	IdempotencyKey string
@@ -35,4 +45,25 @@ type Entry struct {
 	Currency      string
 	Amount        int64
 	CreatedAt     time.Time
+}
+
+// NewAccount is the input for creating an account.
+type NewAccount struct {
+	Name                 string
+	Currency             string
+	AllowNegativeBalance bool
+}
+
+// NewTransaction is the input for posting a transaction.
+type NewTransaction struct {
+	IdempotencyKey string
+	Description    string
+	Entries        []NewEntry
+}
+
+// NewEntry is one line of a NewTransaction.
+type NewEntry struct {
+	AccountID uuid.UUID
+	Currency  string
+	Amount    int64
 }
