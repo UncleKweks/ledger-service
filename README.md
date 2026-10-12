@@ -4,6 +4,7 @@
 ![Go](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![gRPC](https://img.shields.io/badge/gRPC-ledger.v1-244c5a)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A double-entry ledger service in Go and PostgreSQL, served over REST and gRPC.
 
@@ -48,6 +49,7 @@ request never posts twice.
 - [Project layout](#project-layout)
 - [Dependencies](#dependencies)
 - [Limitations and roadmap](#limitations-and-roadmap)
+- [License](#license)
 
 ## Quick start
 
@@ -811,3 +813,7 @@ gen/ledger/v1/            generated protobuf and gRPC code
 - **Single currency per account, no FX.** Cross-currency movements would be
   modelled as two balanced legs through FX accounts, which the
   per-currency balancing rule already supports.
+
+## License
+
+[MIT](LICENSE)
