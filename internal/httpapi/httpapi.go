@@ -284,7 +284,7 @@ func logRequests(log *slog.Logger, next http.Handler) http.Handler {
 		rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
 		next.ServeHTTP(rec, r)
 		log.InfoContext(r.Context(), "http request",
-			"method", r.Method, "path", r.URL.Path, "status", rec.status, "duration_ms", time.Since(start).Milliseconds())
+			"method", r.Method, "path", r.URL.Path, "status", rec.status, "duration", time.Since(start))
 	})
 }
 
