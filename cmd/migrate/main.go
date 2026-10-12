@@ -4,6 +4,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"os"
@@ -35,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := goose.Run(os.Args[1], db, "."); err != nil {
+	if err := goose.RunContext(context.Background(), os.Args[1], db, "."); err != nil {
 		log.Fatal(err)
 	}
 }
