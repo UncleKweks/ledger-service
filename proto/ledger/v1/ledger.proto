@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/UncleKweks/ledger-service/gen/ledger/v1;ledgerv1";
+
+// LedgerService is a double-entry ledger. Amounts are int64 minor units
+// (kobo, cents): positive is a debit, negative a credit.
+service LedgerService {
+  rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse);
+  rpc GetAccount(GetAccountRequest) returns (GetAccountResponse);
+  rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+  // ListEntries returns an account's most recent entries, newest first.
+  rpc ListEntries(ListEntriesRequest) returns (ListEntriesResponse);
+  // PostTransaction atomically posts balanced entries. Retrying with the same
+  // idempotency_key and request returns the original transaction with
+  // replayed = true; reusing the key for a different request fails with
+  // ALREADY_EXISTS.
+  rpc PostTransaction(PostTransactionRequest) returns (PostTransactionResponse);
+  rpc GetTransaction(GetTransactionRequest) returns (GetTransactionResponse);
+}
+
+message Account {
+  string id = 1;
+  string name = 2;
+  string currency = 3;
+  bool allow_negative_balance = 4;
+  google.protobuf.Timestamp create_time = 5;
+}
+
+message Entry {
+  string id = 1;
+  string transaction_id = 2;
+  string account_id = 3;
+  string currency = 4;
+  int64 amount = 5;
+  google.protobuf.Timestamp create_time = 6;
+}
+
+message Transaction {
+  string id = 1;
+  string idempotency_key = 2;
+  string description = 3;
+  repeated Entry entries = 4;
+  google.protobuf.Timestamp create_time = 5;
+}
+
+message CreateAccountRequest {
+  string name = 1;
+  string currency = 2;
+  bool allow_negative_balance = 3;
+}
+
+message CreateAccountResponse {
+  Account account = 1;
+}
+
+message GetAccountRequest {
+  string id = 1;
+}
+
+message GetAccountResponse {
+  Account account = 1;
+}
+
+message GetBalanceRequest {
+  string account_id = 1;
+}
+
+message GetBalanceResponse {
+  string account_id = 1;
+  string currency = 2;
+  int64 balance = 3;
+}
+
+message ListEntriesRequest {
+  string account_id = 1;
+  // Defaults to 50; capped at 500.
+  int32 limit = 2;
+}
+
+message ListEntriesResponse {
+  repeated Entry entries = 1;
+}
+
+message PostTransactionRequest {
+  string idempotency_key = 1;
+  string description = 2;
+  repeated EntryInput entries = 3;
+
+  message EntryInput {
+    string account_id = 1;
+    string currency = 2;
+    int64 amount = 3;
+  }
+}
+
+message PostTransactionResponse {
+  Transaction transaction = 1;
+  // True when this request replayed an earlier posting with the same key.
+  bool replayed = 2;
+}
+
+message GetTransactionRequest {
+  string id = 1;
+}
+
+message GetTransactionResponse {
+  Transaction transaction = 1;
+}
